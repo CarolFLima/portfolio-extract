@@ -23,7 +23,7 @@ def get_indexes(ticker):
     print(price_earning)
 
 if __name__ == '__main__':
-    # app.run()
+    #app.run()
 
     tickers = ['TAEE3.SA', 'BBSE3.SA', 'ENBR3.SA', 'KLBN3.SA', 'FLRY3.SA', 'EGIE3.SA', 'ITSA4.SA', 'WEGE3.SA', 'WIZS3.SA']
 
