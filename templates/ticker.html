@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Stocks</title>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/home.css') }}">
+</head>
+<body>
+
+<h2>Main indexes</h2>
+
+<table>
+  <tr>
+    <th>Index</th>
+    <th>Value</th>
+  </tr>
+  <tr>
+    <td>PL</td>
+    <td>{{pl}}</td>
+  </tr>
+  <tr>
+    <td>Price</td>
+    <td>{{price}}</td>
+  </tr>
+</table>
+
+</body>
+</html>

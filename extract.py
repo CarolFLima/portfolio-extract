@@ -1,15 +1,48 @@
 from yahooquery import Ticker
-from flask import Flask, render_template
+from flask import Flask, url_for, render_template, request, redirect
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///port.db'
+db = SQLAlchemy(app)
 
-@app.route('/')
+class Portfolio(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    ticker = db.Column(db.String(6), nullable=False)
+
+    def __repr__(self):
+        return f'<Ticker {self.id}'
+
+@app.route('/', methods=['POST', 'GET'])
 def port_dashboard():
-    return render_template('home.html', pl='12', price='3232')
+    if request.method == 'POST':
+        form_content = request.form['ticker']
+        new_ticker = Portfolio(ticker=form_content)
+        
+        try:
+            db.session.add(new_ticker)
+            db.session.commit()
+            return redirect('/')
+        except:
+            return 'There was an issue adding your ticker'
+    else:
+        tickers = Portfolio.query.order_by(Portfolio.id).all()
+        return render_template('home.html', tickers=tickers)
 
-@app.route('/ticker')
-def render_ticker():
-    return 'Ticker page'
+@app.route('/ticker/<string:ticker>')
+def render_ticker(ticker):
+    pl, price = get_indexes(f'{ticker}.SA')
+    return render_template('ticker.html', pl=pl, price=price)
+
+@app.route('/delete/<int:id>')
+def delete(id):
+    ticker_to_delete = Portfolio.query.get_or_404(id)
+    try:
+        db.session.delete(ticker_to_delete)
+        db.session.commit()
+        return redirect('/')
+    except:
+        return 'There was a problem deleting this record'
 
 def get_indexes(ticker):
     port = Ticker(ticker)
@@ -20,15 +53,12 @@ def get_indexes(ticker):
     current_price = financial_data['currentPrice']
     earning_per_share = earnings['financialsChart']['yearly'][-1]['earnings']/total_shares
     price_earning = current_price/earning_per_share
-    print(price_earning)
+    return price_earning, current_price
 
 if __name__ == '__main__':
-    #app.run()
+    # tickers = ['TAEE3.SA', 'BBSE3.SA', 'ENBR3.SA', 'KLBN3.SA', 'FLRY3.SA', 'EGIE3.SA', 'ITSA4.SA', 'WEGE3.SA', 'WIZS3.SA']
+    app.run(debug=True)
 
-    tickers = ['TAEE3.SA', 'BBSE3.SA', 'ENBR3.SA', 'KLBN3.SA', 'FLRY3.SA', 'EGIE3.SA', 'ITSA4.SA', 'WEGE3.SA', 'WIZS3.SA']
-
-    for ticker in tickers:
-        get_indexes(ticker)
 
 
 
