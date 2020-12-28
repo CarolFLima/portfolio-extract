@@ -13,6 +13,7 @@ class Portfolio(db.Model):
     def __repr__(self):
         return f'<Ticker {self.id}'
 
+
 @app.route('/', methods=['POST', 'GET'])
 def port_dashboard():
     if request.method == 'POST':
