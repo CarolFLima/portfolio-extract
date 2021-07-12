@@ -2,6 +2,7 @@ from yahooquery import Ticker
 from flask import Flask, url_for, render_template, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 
+
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///port.db'
 db = SQLAlchemy(app)
@@ -13,6 +14,23 @@ class Portfolio(db.Model):
     def __repr__(self):
         return f'<Ticker {self.id}'
 
+
+labels = [
+    'JAN', 'FEB', 'MAR', 'APR',
+    'MAY', 'JUN', 'JUL', 'AUG',
+    'SEP', 'OCT', 'NOV', 'DEC'
+]
+
+values = [
+    967.67, 1190.89, 1079.75, 1349.19,
+    2328.91, 2504.28, 2873.83, 4764.87,
+    4349.29, 6458.30, 9907, 16297
+]
+
+colors = [
+    "#F7464A", "#46BFBD", "#FDB45C", "#FEDCBA",
+    "#ABCDEF", "#DDDDDD", "#ABCABC", "#4169E1",
+    "#C71585", "#FF4500", "#FEDCBA", "#46BFBD"]
 
 @app.route('/', methods=['POST', 'GET'])
 def port_dashboard():
@@ -32,8 +50,10 @@ def port_dashboard():
 
 @app.route('/ticker/<string:ticker>')
 def render_ticker(ticker):
+    bar_labels=labels[6:]+labels[:6]
+    bar_values=values
     pl, price = get_indexes(f'{ticker}.SA')
-    return render_template('ticker.html', pl=pl, price=price)
+    return render_template('ticker.html', pl=pl, price=price,  max=17000, labels=bar_labels, values=bar_values)
 
 @app.route('/delete/<int:id>')
 def delete(id):
